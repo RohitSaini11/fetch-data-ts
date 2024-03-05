@@ -1,24 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import Tabs from './Tabs';
+import Table from './Table';
 
 function App() {
+
+  const USERS_URL = 'https://jsonplaceholder.typicode.com/users';
+  const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
+  const COMMENTS_URL = 'https://jsonplaceholder.typicode.com/comments';
+
+  const [url,setUrl] = useState<string>(USERS_URL);
+  const [data,setData] = useState([]);
+  const [isLoading,setIsLoading] = useState<boolean>(true);
+  const [fetchErr,setFetchErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async ()=>{
+      try {
+          setIsLoading(true);
+          const response = await fetch(url);
+          if(!response.ok) throw Error('Unable to fetch data!');
+          const result = await response.json();
+          console.log(result);
+          setData(result);
+          setFetchErr(null);
+      } 
+      catch(error: any) {
+          setFetchErr(error.message);
+      } 
+      finally{
+        setIsLoading(false);
+      }
+    }
+    
+    fetchData();
+  },[url])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Tabs users={USERS_URL} posts={POSTS_URL} comments={COMMENTS_URL} url={url} setUrl={setUrl}/>
+
+      {isLoading && <p className="loader">Loading....</p> }
+      {fetchErr && !isLoading && <p className="loader" style={{color:'red'}}>ERROR : {fetchErr} </p> }
+      
+      {!isLoading && !fetchErr && <Table data={data} />}
+
     </div>
   );
 }
