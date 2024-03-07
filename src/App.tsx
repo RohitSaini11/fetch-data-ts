@@ -10,7 +10,7 @@ function App() {
   const COMMENTS_URL = 'https://jsonplaceholder.typicode.com/comments';
 
   const [url,setUrl] = useState<string>(USERS_URL);
-  const [data,setData] = useState([]);
+  const [data,setData] = useState<Object[]>([]);
   const [isLoading,setIsLoading] = useState<boolean>(true);
   const [fetchErr,setFetchErr] = useState<string | null>(null);
 
